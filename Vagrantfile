@@ -2,7 +2,8 @@
 # vi: set ft=ruby :
 
 nodes = {
-    'ZeroVM'	=> [1, 110],
+    'ZeroVM'       => [1, 110],
+    'Zwift'        => [1, 111],
 }
 
 Vagrant.configure("2") do |config|
@@ -18,7 +19,7 @@ Vagrant.configure("2") do |config|
             hostname = "%s" % [prefix, (i+1)]
 
             config.vm.define "#{hostname}" do |box|
-                box.vm.hostname = "#{hostname}.book"
+                box.vm.hostname = "#{hostname}.cook.book"
                 box.vm.network :private_network, ip: "172.16.0.#{ip_start+i}", :netmask => "255.255.0.0"
                 box.vm.provision :shell, :path => "#{prefix}.sh"
 
