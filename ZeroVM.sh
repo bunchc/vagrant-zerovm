@@ -9,5 +9,5 @@ sudo su -c 'echo "deb [ arch=amd64 ] http://zvm.rackspace.com/v1/repo/ubuntu/ pr
 wget -O- https://zvm.rackspace.com/v1/repo/ubuntu/zerovm.pkg.key | sudo apt-key add - 
 sudo apt-get update
 
-sudo apt-get -y install zerovm 
+sudo apt-get -y install zerovm-udt
 sudo apt-get -y install zerovm-cli
