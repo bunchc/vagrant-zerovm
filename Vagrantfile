@@ -9,20 +9,35 @@ $commonscript = <<COMMONSCRIPT
 export DEBIAN_FRONTEND=noninteractive
 
 sudo apt-get update
-sudo apt-get install iftop iptraf vim curl wget lighttpd -y
+sudo apt-get install iftop iptraf vim curl wget lighttpd software-properties-common python-software-properties -y
 
-sudo su -c 'echo "deb http://packages.zerovm.org/apt/ubuntu/ precise main" > /etc/apt/sources.list.d/zerovm-precise.list' 
-wget -O- http://packages.zerovm.org/apt/ubuntu/zerovm.pkg.key | sudo apt-key add - 
+sudo apt-add-repository ppa:zerovm-ci/zerovm-latest
 
 sudo apt-get update
 sudo apt-get install -y zerovm zerovm-cli
 
-wget http://packages.zerovm.org/zerovm-samples/python.tar 
-echo 'print "Hello"' > hello.py
-
+echo "*** Installing Dev Environment ***"
 sudo apt-get install -y zerovm-dev gcc-4.4.3-zerovm
 sudo apt-get install -y linux-headers-$(uname -r)
 
+echo "*** Downloading Python ***"
+wget http://packages.zerovm.org/zerovm-samples/python.tar 
+echo 'print "Hello"' > hello.py
+
+echo "*** Preparing for Channel Size Example ***"
+dd if=/dev/urandom of=/home/vagrant/file.txt bs=1048576 count=100
+
+cat > /home/vagrant/example.py <<EOF
+file = open('/dev/3.file.txt', 'r')
+print file.read(5)
+EOF
+
+su - vagrant -c "zvsh --zvm-save-dir ~/ --zvm-image python.tar --zvm-image ~/file.txt python @example.py"
+sudo sed -i "s|Channel = /home/vagrant/file.txt,/dev/3.file.txt,3,0,4294967296,4294967296,0,0|Channel = /home/vagrant/file.txt,/dev/3.file.txt,3,0,3,3,3,3|g" /home/vagrant/manifest.1
+sudo sed -i "s|/home/vagrant/stdout.1|/dev/stdout|g" /home/vagrant/manifest.1
+sudo sed -i "s|/home/vagrant/stderr.1|/dev/stderr|g" /home/vagrant/manifest.1
+
+chown -R vagrant:vagrant /home/vagrant
 COMMONSCRIPT
 
 Vagrant.configure("2") do |config|
